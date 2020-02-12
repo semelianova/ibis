@@ -376,6 +376,30 @@ class RenameTable(AlterTable):
         return self._wrap_command(cmd)
 
 
+class AddColumn(AlterTable):
+    """Add Column class."""
+
+    def __init__(
+        self, table, col_name, type
+    ):
+        # if either database is None, the name is assumed to be fully scoped
+        self.table = table
+        self.col_name = col_name
+        self.type = type.typename
+
+    def compile(self):
+        """Compile the Add Column expression.
+
+        Returns
+        -------
+        string
+        """
+        cmd = '{} ADD {} {}'.format(
+            self.table, self.col_name, self.type
+        )
+        return self._wrap_command(cmd)
+
+
 class TruncateTable(OmniSciDBDDL):
     """Truncate Table class."""
 

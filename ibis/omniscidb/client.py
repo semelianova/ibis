@@ -428,6 +428,29 @@ class OmniSciDBTable(ir.TableExpr, DatabaseEntity):
         op = self.op().change_name(statement.new_qualified_name)
         return type(self)(op)
 
+    def add_column(self, col_name, type, database=None):
+        """
+        Add new column with a given name and type to the table.
+
+        Parameters
+        ----------
+        col_name : string
+        type : string
+
+        Returns
+        -------
+        None
+        """
+        omnisci_type = OmniSciDBDataType.from_ibis(type)
+
+        statement = ddl.AddColumn(
+            self._qualified_name, col_name, omnisci_type
+        )
+
+        self._client._execute(statement)
+        self.op().schema = self.op().schema.append(sch.Schema([statement.col_name], [omnisci_type]))
+        return
+
     def _execute(self, stmt):
         return self._client._execute(stmt)
 
